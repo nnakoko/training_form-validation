@@ -1,0 +1,228 @@
+@use 'variables' as *;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: $font-family;
+    background-color: $background-color;
+    color: $text-color;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: $container-max-width;
+    margin: 0 auto;
+    padding: $padding;
+    background-color: $white;
+    border-radius: $border-radius-large;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: $margin;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+    font-size: 24px;
+}
+
+#userForm {
+    padding: 20px;
+    border-radius: $border-radius;
+    background-color: #fafafa;
+}
+
+.form-wrapper {
+    display: flex;
+}
+
+.form-group {
+    margin-bottom: $margin;
+    border: none;
+    padding: 15px;
+    flex: 1;
+
+    legend {
+        font-weight: bold;
+        color: #2c3e50;
+        padding: 0 10px;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.required {
+    color: $error-color;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+    width: 100%;
+    padding: $padding;
+    border: 2px solid $border-color;
+    border-radius: $border-radius;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+        outline: none;
+        border-color: $primary-color;
+    }
+
+    &.error {
+        border-color: $error-color;
+    }
+}
+
+textarea {
+    resize: vertical;
+}
+
+.radio-group {
+    display: flex;
+    gap: $margin;
+    margin-top: 5px;
+
+    label {
+        display: flex;
+        align-items: center;
+        font-weight: normal;
+        cursor: pointer;
+    }
+
+    input[type="radio"] {
+        margin-right: 5px;
+        width: auto;
+    }
+}
+
+.error-message {
+    color: $error-color;
+    font-size: 14px;
+    margin-top: 5px;
+    display: block;
+    min-height: 20px;
+}
+
+.char-count {
+    text-align: right;
+    font-size: 14px;
+    color: $text-light;
+    margin-top: 5px;
+}
+
+button {
+    background-color: $primary-color;
+    color: $white;
+    padding: $padding 24px;
+    border: none;
+    border-radius: $border-radius;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover:not(:disabled) {
+        background-color: $primary-hover;
+    }
+
+    &:disabled {
+        background-color: $disabled-color;
+        cursor: not-allowed;
+    }
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: $margin;
+}
+
+#backBtn {
+    background-color: $secondary-color;
+
+    &:hover {
+        background-color: $secondary-hover;
+    }
+}
+
+#completeBtn {
+    background-color: $success-color;
+
+    &:hover {
+        background-color: $success-hover;
+    }
+}
+
+// 確認画面のスタイル
+#confirmContent {
+    background-color: #f8f9fa;
+    padding: $padding;
+    border-radius: $border-radius;
+    margin-bottom: $margin;
+}
+
+.confirm-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.confirm-label {
+    font-weight: bold;
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.confirm-value {
+    flex: 1;
+}
+
+// レスポンシブ対応
+@media (max-width: $mobile-breakpoint) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .form-group {
+        padding: 10px;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .confirm-item {
+        flex-direction: column;
+    }
+
+    .confirm-label {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}

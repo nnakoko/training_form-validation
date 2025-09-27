@@ -1,15 +1,275 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-	<title>Parcel1 Sandbox</title>
-	<meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="unsafe-none">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="unsafe-none">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https: ws: wss:; object-src 'none'; base-uri 'self';">
+    <meta name="referrer" content="no-referrer">
+    <meta name="robots" content="noindex, nofollow">
+    <title>フォームバリデーション</title>
+    <link rel="stylesheet" href="src/styles/main.scss">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Wanakana - 確実な読み込み -->
+    <script>
+        // Wanakana読み込み関数
+        function loadWanakana() {
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/wanakana@5.3.1/wanakana.min.js';
+            script.onload = function() {
+                console.log('✅ Wanakana script loaded');
+                // 少し待ってから確認
+                setTimeout(function() {
+                    if (typeof window.wanakana !== 'undefined') {
+                        console.log('✅ Wanakana object available:', window.wanakana);
+                        // カスタムイベントを発火
+                        const event = new CustomEvent('wanakanaLoaded', {
+                            detail: { wanakana: window.wanakana }
+                        });
+                        window.dispatchEvent(event);
+                    } else {
+                        console.warn('⚠️ Wanakana object not available after script load');
+                        // フォールバック: 別のCDNを試行
+                        tryFallbackCDN();
+                    }
+                }, 100);
+            };
+            script.onerror = function() {
+                console.error('❌ Failed to load Wanakana script from unpkg');
+                // フォールバック: 別のCDNを試行
+                tryFallbackCDN();
+            };
+            document.head.appendChild(script);
+        }
+
+        // フォールバックCDN読み込み
+        function tryFallbackCDN() {
+            console.log('🔄 Trying fallback CDN...');
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/wanakana@5.3.1/wanakana.min.js';
+            script.onload = function() {
+                console.log('✅ Wanakana script loaded from fallback CDN');
+                setTimeout(function() {
+                    if (typeof window.wanakana !== 'undefined') {
+                        console.log('✅ Wanakana object available from fallback:', window.wanakana);
+                        const event = new CustomEvent('wanakanaLoaded', {
+                            detail: { wanakana: window.wanakana }
+                        });
+                        window.dispatchEvent(event);
+                    } else {
+                        console.error('❌ Wanakana object not available from fallback CDN');
+                        const event = new CustomEvent('wanakanaError', {
+                            detail: { error: 'All CDN attempts failed' }
+                        });
+                        window.dispatchEvent(event);
+                    }
+                }, 100);
+            };
+            script.onerror = function() {
+                console.error('❌ All Wanakana CDN attempts failed');
+                const event = new CustomEvent('wanakanaError', {
+                    detail: { error: 'All CDN attempts failed' }
+                });
+                window.dispatchEvent(event);
+            };
+            document.head.appendChild(script);
+        }
+
+        // 即座に読み込み開始
+        loadWanakana();
+
+        // Kuromoji.js読み込み関数
+        function loadKuromoji() {
+            const kuromojiUrls = [
+                '/kuromoji/build/kuromoji.js',
+                '/node_modules/kuromoji/build/kuromoji.js',
+                'https://unpkg.com/kuromoji@0.1.2/build/kuromoji.min.js',
+                'https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/build/kuromoji.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/kuromoji/0.1.2/kuromoji.min.js',
+                'https://unpkg.com/kuromoji@latest/build/kuromoji.min.js'
+            ];
+
+            let currentIndex = 0;
+
+            function tryNextKuromojiSource() {
+                if (currentIndex >= kuromojiUrls.length) {
+                    console.error('❌ All Kuromoji loading attempts failed');
+                    const event = new CustomEvent('kuromojiError', {
+                        detail: { error: 'All Kuromoji loading attempts failed' }
+                    });
+                    window.dispatchEvent(event);
+                    return;
+                }
+
+                console.log(`Trying Kuromoji source ${currentIndex + 1}: ${kuromojiUrls[currentIndex]}`);
+                const script = document.createElement('script');
+                script.src = kuromojiUrls[currentIndex];
+                script.onload = function() {
+                    console.log(`✅ Kuromoji script loaded from: ${kuromojiUrls[currentIndex]}`);
+                    setTimeout(function() {
+                        if (typeof window.kuromoji !== 'undefined') {
+                            console.log('✅ Kuromoji object available:', window.kuromoji);
+                            // カスタムイベントを発火
+                            const event = new CustomEvent('kuromojiLoaded', {
+                                detail: { kuromoji: window.kuromoji }
+                            });
+                            window.dispatchEvent(event);
+                        } else {
+                            console.warn('⚠️ Kuromoji object not available after script load');
+                            const event = new CustomEvent('kuromojiError', {
+                                detail: { error: 'Kuromoji object not available' }
+                            });
+                            window.dispatchEvent(event);
+                        }
+                    }, 100);
+                };
+                script.onerror = function() {
+                    console.warn(`❌ Failed to load Kuromoji from: ${kuromojiUrls[currentIndex]}`);
+                    currentIndex++;
+                    tryNextKuromojiSource();
+                };
+                document.head.appendChild(script);
+            }
+
+            tryNextKuromojiSource();
+        }
+
+        // Kuroshiro.js読み込み関数
+        function loadKuroshiro() {
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/kuroshiro@1.2.0/dist/kuroshiro.min.js';
+            script.onload = function() {
+                console.log('✅ Kuroshiro script loaded');
+                setTimeout(function() {
+                    if (typeof window.Kuroshiro !== 'undefined') {
+                        console.log('✅ Kuroshiro object available:', window.Kuroshiro);
+                        // Kuromoji読み込み開始
+                        loadKuromoji();
+                    } else {
+                        console.warn('⚠️ Kuroshiro object not available after script load');
+                        // Kuromoji読み込みを試行
+                        loadKuromoji();
+                    }
+                }, 100);
+            };
+            script.onerror = function() {
+                console.error('❌ Failed to load Kuroshiro script');
+                // Kuromoji読み込みを試行
+                loadKuromoji();
+            };
+            document.head.appendChild(script);
+        }
+
+        // Kuroshiro読み込み開始
+        loadKuroshiro();
+    </script>
 </head>
-
 <body>
-	<div id="app"></div>
+    <div id="app">
+        <div class="container">
+            <h1>ユーザー情報入力フォーム</h1>
 
-	<script src="src/index.ts">
-	</script>
+            <form id="userForm">
+                <fieldset class="form-group">
+                    <legend>都道府県 <span class="required">*</span></legend>
+                    <select id="prefecture" name="prefecture" required>
+                        <option value="">選択してください</option>
+                        <option value="tokyo">東京都</option>
+                        <option value="osaka">大阪府</option>
+                        <option value="kyoto">京都府</option>
+                        <option value="hokkaido">北海道</option>
+                        <option value="other">その他</option>
+                    </select>
+                    <span class="error-message" id="prefecture-error"></span>
+                </fieldset>
+
+                <fieldset class="form-group">
+                    <legend>性別 <span class="required">*</span></legend>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="gender" value="male" required>
+                            男性
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="female" required>
+                            女性
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="other" required>
+                            その他
+                        </label>
+                    </div>
+                    <span class="error-message" id="gender-error"></span>
+                </fieldset>
+
+                <div class="form-wrapper">
+                    <fieldset class="form-group">
+                        <legend>姓 <span class="required">*</span></legend>
+                        <input type="text" id="lastName" name="lastName" required>
+                        <span class="error-message" id="lastName-error"></span>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <legend>名 <span class="required">*</span></legend>
+                        <input type="text" id="firstName" name="firstName" required>
+                        <span class="error-message" id="firstName-error"></span>
+                    </fieldset>
+                </div>
+
+                <div class="form-wrapper">
+                    <fieldset class="form-group">
+                        <legend>セイ <span class="required">*</span></legend>
+                        <input type="text" id="lastNameKana" name="lastNameKana" required>
+                        <span class="error-message" id="lastNameKana-error"></span>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <legend>メイ <span class="required">*</span></legend>
+                        <input type="text" id="firstNameKana" name="firstNameKana" required>
+                        <span class="error-message" id="firstNameKana-error"></span>
+                    </fieldset>
+                </div>
+
+
+                <fieldset class="form-group">
+                    <legend>電話番号 <span class="required">*</span></legend>
+                    <input type="tel" id="phone" name="phone" required>
+                    <span class="error-message" id="phone-error"></span>
+                </fieldset>
+
+                <fieldset class="form-group">
+                    <legend>メールアドレス <span class="required">*</span></legend>
+                    <input type="email" id="email" name="email" required>
+                    <span class="error-message" id="email-error"></span>
+                </fieldset>
+
+                <fieldset class="form-group">
+                    <legend>メッセージ</legend>
+                    <textarea id="message" name="message" maxlength="500" placeholder="500文字以内で入力してください"></textarea>
+                    <div class="char-count">
+                        <span id="charCount">0</span>/500文字
+                    </div>
+                    <span class="error-message" id="message-error"></span>
+                </fieldset>
+
+                <fieldset class="form-group">
+                    <button type="submit" id="submitBtn" disabled>確認画面へ</button>
+                </fieldset>
+            </form>
+        </div>
+
+        <!-- 確認画面 -->
+        <div id="confirmScreen" class="container" style="display: none;">
+            <h1>入力内容確認</h1>
+            <div id="confirmContent"></div>
+            <div class="button-group">
+                <button type="button" id="backBtn">戻る</button>
+                <button type="button" id="completeBtn">送信完了</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/index.ts"></script>
 </body>
-
 </html>
