@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (conversionResult.success && conversionResult.result !== inputValue) {
                     kanaElement.value = conversionResult.result;
-                    validateKana(conversionResult.result, fieldName);
+                    validationState[fieldName as keyof ValidationState] = validateKana(conversionResult.result, fieldName);
                     console.log(`✅ ${fieldName} カタカナ変換: "${inputValue}" -> "${conversionResult.result}"`);
                 } else {
                     console.log(`⚠️ ${fieldName} カタカナ変換失敗または変換不要: "${inputValue}"`);
@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.lastName.addEventListener('blur', async () => {
         validationState.lastName = validateName(elements.lastName.value, 'lastName');
         await handleKanaConversion(elements.lastName, elements.lastNameKana, 'lastName');
+        updateSubmitButton(validationState, elements.submitBtn);
     });
 
     elements.lastName.addEventListener('input', () => {
@@ -101,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.firstName.addEventListener('blur', async () => {
         validationState.firstName = validateName(elements.firstName.value, 'firstName');
         await handleKanaConversion(elements.firstName, elements.firstNameKana, 'firstName');
+        updateSubmitButton(validationState, elements.submitBtn);
     });
 
     elements.firstName.addEventListener('input', () => {
@@ -160,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // フォーム送信
     elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
-        handleFormSubmit(elements, validationState);
+        handleFormSubmit(elements);
     });
 
     // ボタンのイベントリスナー

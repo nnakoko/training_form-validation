@@ -34,6 +34,8 @@ export function getFormElements(): FormElements {
 // 送信ボタンの有効/無効を切り替え
 export function updateSubmitButton(validationState: ValidationState, submitBtn: HTMLButtonElement): void {
     const isValid = Object.values(validationState).every((state: boolean) => state);
+    console.log('Validation state:', validationState);
+    console.log('All fields valid:', isValid);
     submitBtn.disabled = !isValid;
 }
 
@@ -117,7 +119,7 @@ export function completeSubmission(elements: FormElements, validationState: Vali
 }
 
 // フォーム送信処理
-export function handleFormSubmit(elements: FormElements, validationState: ValidationState): void {
+export function handleFormSubmit(elements: FormElements): void {
     if (validateAllFields(elements)) {
         showConfirmScreen(elements);
     }
