@@ -47,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (conversionResult.success && conversionResult.result !== inputValue) {
                     kanaElement.value = conversionResult.result;
-                    validationState[fieldName as keyof ValidationState] = validateKana(conversionResult.result, fieldName);
+                    // カタカナフィールドのバリデーション状態を更新
+                    const kanaFieldName = fieldName === 'lastName' ? 'lastNameKana' : 'firstNameKana';
+                    validationState[kanaFieldName as keyof ValidationState] = validateKana(conversionResult.result, kanaFieldName);
                     console.log(`✅ ${fieldName} カタカナ変換: "${inputValue}" -> "${conversionResult.result}"`);
                 } else {
                     console.log(`⚠️ ${fieldName} カタカナ変換失敗または変換不要: "${inputValue}"`);
@@ -58,7 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // 入力が空の場合はカタカナフィールドもクリア
             kanaElement.value = '';
-            validationState[fieldName as keyof ValidationState] = false;
+            const kanaFieldName = fieldName === 'lastName' ? 'lastNameKana' : 'firstNameKana';
+            validationState[kanaFieldName as keyof ValidationState] = false;
         }
 
         updateSubmitButton(validationState, elements.submitBtn);
