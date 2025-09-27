@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  base: '/training_form-validation/',
   server: {
     port: 3000,
     open: true,
