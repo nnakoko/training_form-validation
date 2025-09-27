@@ -39,19 +39,19 @@ export default defineConfig({
         main: 'index.html'
       },
       output: {
-        entryFileNames: 'js/[name]-[hash].js',
-        chunkFileNames: 'js/[name]-[hash].js',
+        entryFileNames: 'js/[name].js',
+        chunkFileNames: 'js/[name].js',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || 'asset'
           const info = name.split('.')
           const ext = info[info.length - 1]
           if (/\.(css|scss)$/.test(name)) {
-            return `css/[name]-[hash].${ext}`
+            return `css/[name].${ext}`
           }
           if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(name)) {
-            return `images/[name]-[hash].${ext}`
+            return `images/[name].${ext}`
           }
-          return `assets/[name]-[hash].${ext}`
+          return `assets/[name].${ext}`
         }
       },
       external: (id) => {
